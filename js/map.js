@@ -2,34 +2,126 @@
 var drawMap = function() {
 
   // Create map and set view
- 
+	var map = L.map("container").setView([39.82, -98.58], 4);
 
   // Create a tile layer variable using the appropriate url
-
-
+	var layer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		maxZoom: 18,
+		id: 'jamesl5.no7ibcoe',
+		accessToken: 'pk.eyJ1IjoiamFtZXNsNSIsImEiOiJjaWZ3eWk5dzEzaW9sdXVtMnh3NDEyZzFpIn0.ZWjXQxwisXRGmlIo4tNmcA'
+	});
+	
   // Add the layer to your map
- 
+	layer.addTo(map);
 
   // Execute your function to get data
- 
+	getData(map);
 }
 
 // Function for getting data
-var getData = function() {
+var getData = function(map) {
 
   // Execute an AJAX request to get the data in data/response.js
-
-
+	var data;
+	$.ajax({ 
+		type: 'GET', 
+		url: 'data/response.json', 
+		dataType: 'json',
+		success: function (dat) { 
+			data = dat;
+			customBuild(map, data);
+		}
+	});
+	
   // When your request is successful, call your customBuild function
-
+	
 }
 
 // Loop through your data and add the appropriate layers and points
-var customBuild = function() {
+var customBuild = function(map, data) {
 	// Be sure to add each layer to the map
-
-	// Once layers are on the map, add a leaflet controller that shows/hides layers
-  
+	var unknown = new L.LayerGroup([]);
+	var unarmed = new L.LayerGroup([]);
+	var handgun = new L.LayerGroup([]);
+	var shotgun = new L.LayerGroup([]);
+	var unknownFirearm = new L.LayerGroup([]);
+	var rifle = new L.LayerGroup([]);
+	var otherGun = new L.LayerGroup([]);
+	var bluntObject = new L.LayerGroup([]);
+	var knife = new L.LayerGroup([]);
+	var vehicle = new L.LayerGroup([]);
+	var nonLethal = new L.LayerGroup([]);
+	var others = new L.LayerGroup([]);
+	var latitude;
+	var longitude;
+	var weapon;
+	var result;
+	data.forEach (function(incident){
+		latitude = incident.lat;
+		longitude = incident.lng;
+		weapon = incident.Weapon;
+		var circle = new L.circle([latitude, longitude], 200, {
+			color : resultColor(incident),
+			fillColor : resultColor(incident),
+			fillOpacity : 0.5
+		});
+		if(weapon == "Blunt object (clubs, hammers, etc.)"){
+			circle.addTo(bluntObject);
+		} else if(weapon == "Firearm; not stated"){
+			circle.addTo(unknownFirearm);
+		} else if (weapon == "Handgun"){
+			circle.addTo(handgun);
+		} else if (weapon == "Knife or cutting instrument"){
+			circle.addTo(knife);
+		} else if (weapon == "Other Gun"){
+			circle.addTo(otherGun);
+		} else if (weapon == "Rifle" || weapon == "Assault Rifle"){
+			circle.addTo(rifle);
+		} else if (weapon == "Shotgun"){
+			circle.addTo(shotgun);
+		} else if (weapon == "Toy/fake/non-lethal gun"){
+			circle.addTo(nonLethal);
+		} else if (weapon == "Personal weapon (hands, fists, feet, etc.)" || weapon == "Unarmed"){
+			circle.addTo(unarmed);
+		} else if (weapon == "Unknown"){
+			circle.addTo(unknown);
+		} else if (weapon == "Car" || weapon == "Car?" || weapon == "driving a car" || weapon == "Vehicle"){
+			circle.addTo(vehicle);
+		} else {
+			circle.addTo(others);
+		}
+	});
+	
+	var layers = {
+		"Blunt object (clubs, hammers, etc.)" : unknown,
+		"Knife or cutting instrument" : knife,
+		"Handgun" : handgun,
+		"Rifle" : rifle,
+		"Shotgun" : shotgun,
+		"Other Gun" : otherGun,
+		"Unknown Firearm" : unknownFirearm,
+		"Vehicle" : vehicle,
+		"Unarmed" : unarmed,
+		"Non-lethal Weapon" : nonLethal,
+		"Others" : others
+	}
+	L.control.layers(null,layers).addTo(map);
 }
+
+var resultColor = function(incident){
+	var result = incident['Hit or Killed?'];
+	if(result == "Killed"){
+		return "red"
+	} else if (result == "Hit"){
+		return "yellow"
+	} else {
+		return "white"
+	}
+}
+	
+	// Once layers are on the map, add a leaflet controller that shows/hides layers
+	
+
 
 
