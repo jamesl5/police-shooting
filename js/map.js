@@ -44,6 +44,7 @@ var getData = function(map) {
 // Loop through your data and add the appropriate layers and points
 var customBuild = function(map, data) {
 	// Be sure to add each layer to the map
+	//layer group instances
 	var unknown = new L.LayerGroup([]);
 	var unarmed = new L.LayerGroup([]);
 	var handgun = new L.LayerGroup([]);
@@ -60,18 +61,24 @@ var customBuild = function(map, data) {
 	var longitude;
 	var weapon;
 	var result;
+	//arrays for storing counts of data
+	//index 0 is men, index 1 is women
 	var arm = [0, 0];
 	var unarm = [0, 0];
+	//for each incident in data..
 	data.forEach (function(incident){
 		latitude = incident.lat;
 		longitude = incident.lng;
 		weapon = incident.Weapon;
+		//create a circle with colors
 		var circle = new L.circle([latitude, longitude], 300, {
 			color : resultColor(incident),
 			fillColor : resultColor(incident),
 			fillOpacity : 0.5
 		});
+		//Popup window
 		circle.bindPopup(incident.Summary);
+		//add each circle according to its group and increment the counts
 		if(weapon == "Blunt object (clubs, hammers, etc.)"){
 			circle.addTo(bluntObject);
 			arm[checkGender(incident)]++;
@@ -110,6 +117,7 @@ var customBuild = function(map, data) {
 			unarm[checkGender(incident)]++;
 		}
 	});
+	//when everything is loaded, add a table with stats
 	$(document).ready(function() {
 		$("#table1").append(
 		"<table class = 'table table-striped'>"+
@@ -117,6 +125,7 @@ var customBuild = function(map, data) {
 		"<tr><td class = 'title'>Armed</td><td>"+ arm[0] +"</td><td>" + arm[1] +" </td></tr>" +
 		"<tr><td class = 'title'>Unarmed/unspecified</td><td>"+ unarm[0] +"</td><td>"+ unarm[1] +"</td></tr></table>");
 	});
+	//List of layer groups
 	var layers = {
 		"Blunt object (clubs, hammers, etc.)" : unknown,
 		"Knife or cutting instrument" : knife,
@@ -130,9 +139,11 @@ var customBuild = function(map, data) {
 		"Non-lethal Weapon" : nonLethal,
 		"Others" : others
 	}
+	//add control
 	L.control.layers(null,layers).addTo(map);
 }
 
+//function for choosing color
 var resultColor = function(incident){
 	var result = incident['Hit or Killed?'];
 	if(result == "Killed"){
@@ -140,10 +151,11 @@ var resultColor = function(incident){
 	} else if (result == "Hit"){
 		return "yellow"
 	} else {
-		return "white"
+		return "gray"
 	}
 }
 
+//function for checking gender
 var checkGender = function(incident){
 	var gender = incident["Victim's Gender"];
 	if(gender == "Male"){
@@ -153,9 +165,6 @@ var checkGender = function(incident){
 	}
 	
 }
-
-
-	// Once layers are on the map, add a leaflet controller that shows/hides layers
 
 
 

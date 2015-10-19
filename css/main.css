@@ -1,6 +1,15 @@
 /* You'll probably want to add some styles here */
+/* default font size and weight*/
+body {
+	font-size: 16px;
+	font-weight: 400;}
+
+/* container height*/
 #container {
 	height:800px;
+}
+p{
+	text-align: center;
 }
 .table{
 	text-align : center;
@@ -8,6 +17,20 @@
 .title{
 	font-weight: bold;
 }
+
+/*font colors*/
+.red{
+	color : red;
+}
+
+.gray{
+	color : gray;
+}
+
+.yellow{
+	color : yellow;}
+	
+	
 h1 {
 	text-align : center;
 }
