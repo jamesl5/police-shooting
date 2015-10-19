@@ -1,3 +1,5 @@
+
+
 // Function to draw your map
 var drawMap = function() {
 
@@ -19,6 +21,7 @@ var drawMap = function() {
 	getData(map);
 }
 
+
 // Function for getting data
 var getData = function(map) {
 
@@ -33,7 +36,7 @@ var getData = function(map) {
 			customBuild(map, data);
 		}
 	});
-	
+
   // When your request is successful, call your customBuild function
 	
 }
@@ -57,42 +60,63 @@ var customBuild = function(map, data) {
 	var longitude;
 	var weapon;
 	var result;
+	var arm = [0, 0];
+	var unarm = [0, 0];
 	data.forEach (function(incident){
 		latitude = incident.lat;
 		longitude = incident.lng;
 		weapon = incident.Weapon;
-		var circle = new L.circle([latitude, longitude], 200, {
+		var circle = new L.circle([latitude, longitude], 300, {
 			color : resultColor(incident),
 			fillColor : resultColor(incident),
 			fillOpacity : 0.5
 		});
+		circle.bindPopup(incident.Summary);
 		if(weapon == "Blunt object (clubs, hammers, etc.)"){
 			circle.addTo(bluntObject);
+			arm[checkGender(incident)]++;
 		} else if(weapon == "Firearm; not stated"){
 			circle.addTo(unknownFirearm);
+			arm[checkGender(incident)]++;
 		} else if (weapon == "Handgun"){
 			circle.addTo(handgun);
+			arm[checkGender(incident)]++;
 		} else if (weapon == "Knife or cutting instrument"){
 			circle.addTo(knife);
+			arm[checkGender(incident)]++;
 		} else if (weapon == "Other Gun"){
 			circle.addTo(otherGun);
+			arm[checkGender(incident)]++;
 		} else if (weapon == "Rifle" || weapon == "Assault Rifle"){
 			circle.addTo(rifle);
+			arm[checkGender(incident)]++;
 		} else if (weapon == "Shotgun"){
 			circle.addTo(shotgun);
+			arm[checkGender(incident)]++;
 		} else if (weapon == "Toy/fake/non-lethal gun"){
 			circle.addTo(nonLethal);
+			unarm[checkGender(incident)]++;
 		} else if (weapon == "Personal weapon (hands, fists, feet, etc.)" || weapon == "Unarmed"){
 			circle.addTo(unarmed);
+			unarm[checkGender(incident)]++;
 		} else if (weapon == "Unknown"){
 			circle.addTo(unknown);
+			unarm[checkGender(incident)]++;
 		} else if (weapon == "Car" || weapon == "Car?" || weapon == "driving a car" || weapon == "Vehicle"){
 			circle.addTo(vehicle);
+			unarm[checkGender(incident)]++;
 		} else {
 			circle.addTo(others);
+			unarm[checkGender(incident)]++;
 		}
 	});
-	
+	$(document).ready(function() {
+		$("#table1").append(
+		"<table class = 'table table-striped'>"+
+		"<tr><td></td><td>Men</td><td>Women/unspecified</td></tr>"+
+		"<tr><td>Armed</td><td>"+ arm[0] +"</td><td>" + arm[1] +" </td></tr>" +
+		"<tr><td>Unarmed/unspecified</td><td>"+ unarm[0] +"</td><td>"+ unarm[1] +"</td></tr></table>");
+	});
 	var layers = {
 		"Blunt object (clubs, hammers, etc.)" : unknown,
 		"Knife or cutting instrument" : knife,
@@ -119,9 +143,19 @@ var resultColor = function(incident){
 		return "white"
 	}
 }
+
+var checkGender = function(incident){
+	var gender = incident["Victim's Gender"];
+	if(gender == "Male"){
+		return 0;
+	} else {
+		return 1;
+	}
 	
+}
+
+
 	// Once layers are on the map, add a leaflet controller that shows/hides layers
-	
 
 
 
