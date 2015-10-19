@@ -113,9 +113,9 @@ var customBuild = function(map, data) {
 	$(document).ready(function() {
 		$("#table1").append(
 		"<table class = 'table table-striped'>"+
-		"<tr><td></td><td>Men</td><td>Women/unspecified</td></tr>"+
-		"<tr><td>Armed</td><td>"+ arm[0] +"</td><td>" + arm[1] +" </td></tr>" +
-		"<tr><td>Unarmed/unspecified</td><td>"+ unarm[0] +"</td><td>"+ unarm[1] +"</td></tr></table>");
+		"<tr><td></td><td class = 'title'>Men</td><td class = 'title'>Women/unspecified</td></tr>"+
+		"<tr><td class = 'title'>Armed</td><td>"+ arm[0] +"</td><td>" + arm[1] +" </td></tr>" +
+		"<tr><td class = 'title'>Unarmed/unspecified</td><td>"+ unarm[0] +"</td><td>"+ unarm[1] +"</td></tr></table>");
 	});
 	var layers = {
 		"Blunt object (clubs, hammers, etc.)" : unknown,
